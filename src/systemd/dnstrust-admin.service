@@ -8,6 +8,7 @@ Type=simple
 User=dnstrust-admin
 Group=dnstrust-admin
 ExecStart=/usr/local/sbin/dnstrust-admin serve
+ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 RestartSec=3s
 UMask=0027
