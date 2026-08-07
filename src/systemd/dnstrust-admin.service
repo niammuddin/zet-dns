@@ -1,0 +1,32 @@
+[Unit]
+Description=DNS Trust Admin dashboard
+After=network.target dnstrust-unbound.service
+Requires=dnstrust-unbound.service
+
+[Service]
+Type=simple
+User=dnstrust-admin
+Group=dnstrust-admin
+ExecStart=/usr/local/sbin/dnstrust-admin serve
+Restart=on-failure
+RestartSec=3s
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+ReadWritePaths=/var/lib/dnstrust-admin
+
+[Install]
+WantedBy=multi-user.target

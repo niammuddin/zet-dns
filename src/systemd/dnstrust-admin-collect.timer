@@ -1,0 +1,12 @@
+[Unit]
+Description=Collect DNS Trust metrics every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+AccuracySec=10s
+Persistent=true
+Unit=dnstrust-admin-collect.service
+
+[Install]
+WantedBy=timers.target

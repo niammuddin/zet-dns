@@ -1,0 +1,17 @@
+[Unit]
+Description=Collect DNS Trust metrics
+After=dnstrust-unbound.service
+
+[Service]
+Type=oneshot
+Group=dnstrust-admin
+ExecStart=/usr/local/sbin/dnstrust-admin collect
+UMask=0027
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/dnstrust-admin

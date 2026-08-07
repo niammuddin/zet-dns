@@ -1,0 +1,12 @@
+[Unit]
+Description=Periodically update DNS Trust Komdigi blacklist
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1h
+RandomizedDelaySec=5min
+Persistent=true
+Unit=unbound-blacklist-update.service
+
+[Install]
+WantedBy=timers.target

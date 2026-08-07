@@ -1,0 +1,3 @@
+#!/bin/sh
+set -eu
+exec /usr/sbin/runuser -u dnstrust -- /usr/local/libexec/dnstrust-unbound "$@"

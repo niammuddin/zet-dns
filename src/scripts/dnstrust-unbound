@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+UNBOUND_CONTROL=/usr/local/sbin/unbound-control
+CONFIG=/etc/unbound/unbound.conf
+
+case "${1:-}" in
+    refresh)
+        exec "$UNBOUND_CONTROL" -c "$CONFIG" reload
+        ;;
+    stats_noreset|stats|status)
+        exec "$UNBOUND_CONTROL" -c "$CONFIG" "$1"
+        ;;
+    uptime)
+        "$UNBOUND_CONTROL" -c "$CONFIG" stats_noreset \
+            | awk -F= '/^time[.]up=/{printf "uptime: %s seconds\n", $2; found=1} END{exit !found}'
+        ;;
+    *)
+        echo "usage: dnstrust-unbound {refresh|stats|stats_noreset|status|uptime}" >&2
+        exit 64
+        ;;
+esac

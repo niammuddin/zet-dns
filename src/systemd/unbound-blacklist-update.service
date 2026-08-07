@@ -1,0 +1,18 @@
+[Unit]
+Description=Update DNS Trust Komdigi blacklist
+After=network-online.target dnstrust-unbound.service
+Wants=network-online.target
+Requires=dnstrust-unbound.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/unbound-blacklist-update
+ExecStart=/usr/local/sbin/update-dnstrust-blacklist
+TimeoutStartSec=20min
+UMask=0027
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+
+[Install]
+WantedBy=multi-user.target

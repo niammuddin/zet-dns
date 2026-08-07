@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch DNS Trust Admin action queue
+
+[Path]
+DirectoryNotEmpty=/var/lib/dnstrust-admin/queue
+Unit=dnstrust-admin-worker.service
+
+[Install]
+WantedBy=multi-user.target

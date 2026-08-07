@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*~
+
+# Test logs
+test/docker/*.log

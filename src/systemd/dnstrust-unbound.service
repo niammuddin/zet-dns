@@ -1,0 +1,21 @@
+[Unit]
+Description=DNS Trust custom Unbound resolver
+Documentation=man:systemd.service(5)
+After=network-online.target
+Wants=network-online.target
+Before=nss-lookup.target
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/install -d -o dnstrust -g dnstrust -m 0750 /etc/unbound/run /var/lib/dnstrust
+ExecStartPre=/usr/local/sbin/unbound-checkconf /etc/unbound/unbound.conf
+ExecStart=/usr/local/sbin/unbound -d -c /etc/unbound/unbound.conf
+ExecReload=/usr/local/sbin/dnstrust-control refresh
+Restart=on-failure
+RestartSec=2s
+RuntimeDirectory=dnstrust
+RuntimeDirectoryMode=0750
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=Apply queued DNS Trust Admin actions
+After=dnstrust-unbound.service
+
+[Service]
+Type=oneshot
+Group=dnstrust-admin
+ExecStart=/usr/local/sbin/dnstrust-admin worker
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
