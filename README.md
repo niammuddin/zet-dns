@@ -40,13 +40,14 @@ Fitur utama:
 | `qemu-guest-agent` | Agen mesin virtual |
 | `dnsutils` | Alat tes DNS (`dig`) |
 | `curl` dan `openssl` | Download & sertifikat |
+| `git` | Untuk clone repository |
 
 Cara menginstal dependensi di Debian:
 
 ```sh
 apt update
 apt install -y systemd openssh-server nftables unbound-anchor \
-    qemu-guest-agent dnsutils curl openssl
+    qemu-guest-agent dnsutils curl openssl git
 ```
 
 > Catatan: `blcreate`, `unbound`, dan `dnstrust-admin` sudah disertakan dalam project ini, tidak perlu diinstal manual.
@@ -58,7 +59,7 @@ apt install -y systemd openssh-server nftables unbound-anchor \
 Bisa lewat `git clone`:
 
 ```sh
-git clone https://github.com/<user>/zet-dns
+git clone https://github.com/niammuddin/zet-dns
 cd zet-dns
 ```
 
@@ -128,6 +129,52 @@ systemctl is-active dnstrust-unbound
 | `systemctl status unbound-blacklist-update.timer` | Status pembaruan daftar blokir |
 
 Daftar situs blokir diperbarui otomatis setiap 1 jam.
+
+### Panduan Singkat nftables
+
+Server dilindungi firewall **nftables**. Secara default hanya port berikut yang dibuka untuk jaringan privat (10/8, 172.16/12, 192.168/16):
+
+| Port | Layanan |
+|---|---|
+| 53 | DNS (UDP & TCP) |
+| 22 | SSH |
+| 9080 | Dashboard |
+
+#### Melihat aturan yang aktif
+
+```sh
+nft list ruleset
+```
+
+#### Menambah port yang diizinkan
+
+File aturan ada di `/etc/nftables.conf`. Contoh membuka port 80:
+
+1. Buka file:
+
+   ```sh
+   nano /etc/nftables.conf
+   ```
+
+2. Tambahkan baris di bagian `chain input` (di samping aturan `tcp dport 9080`):
+
+   ```
+   ip saddr @ssh_admins_v4 tcp dport 80 accept
+   ```
+
+3. Simpan, lalu terapkan:
+
+   ```sh
+   systemctl restart nftables
+   ```
+
+4. Cek apakah sudah aktif:
+
+   ```sh
+   nft list chain inet filter input
+   ```
+
+> Perhatian: aturan `policy drop` membuat semua koneksi lain ditolak. Pastikan port SSH (22) dan DNS (53) tidak dihapus dari file, dan selalu tes dari terminal lain sebelum meninggalkan sesi SSH.
 
 ## Cara Menghapus (Uninstall)
 
