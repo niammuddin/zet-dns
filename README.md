@@ -1,13 +1,25 @@
 # Zet-DNS
 
-DNS Server untuk Memfilter/`memblokir situs negatif dari daftar **Komdigi Trust Positif**, dilengkapi dashboard admin berbasis web.
+DNS Server untuk Memfilter/memblokir situs negatif dari daftar **Komdigi Trust Positif**, dilengkapi dashboard admin berbasis web. mesin dns ini meniru perilaku dnstrust-ng komdigi yang depracted tidak dikembangkan lagi.
+
+zetDNS tidak menggunakan RPZ untuk memblokir situs dari daftar domain komdigi yang jumlahnya sudah mencapai sekitar 9juta lebih, tetapi menggunakan cara khusus yang lebih cepat di Unbound resolver dns untuk memblokir daftar domain.
 
 Fitur utama:
 
-- Memfilter/`memblokir` situs dari daftar Trust Positif (otomatis diperbarui tiap jam)
+- Memfilter situs dari daftar Trust Positif (otomatis diperbarui)
+- Set interval update daftar domain trust+ komdigi
 - Dashboard admin untuk mengelola aturan
 - SafeSearch otomatis untuk mesin pencari
 - Firewall yang mengamankan server
+- Halaman blokir
+- Whitelist domain
+- Local override domain
+- Local DNS
+- T-Proxy DNS (Menerima lalu lintas DNS yang dialihkan oleh router melalui TPROXY)
+- DNSSEC
+- ACL / Access control list pelanggan
+- DNS inspector
+- Activity log
 
 ## Syarat (Sebelum Instalasi)
 
@@ -41,16 +53,27 @@ apt install -y systemd openssh-server nftables unbound-anchor \
 
 ## Cara Install
 
-1. Salin folder project ini ke server (misalnya `/root/zet-dns`).
-2. Masuk sebagai root lalu jalankan:
+### 1. Ambil Project
 
-   ```sh
-   cd /root/zet-dns
-   ./install.sh
-   ```
+Bisa lewat `git clone`:
 
-3. Akan diminta **password dashboard** (minimal 12 karakter). Kosongkan saja jika ingin dibuatkan password acak.
-4. Tunggu sampai muncul pesan:
+```sh
+git clone https://github.com/<user>/zet-dns
+cd zet-dns
+```
+
+Atau salin folder project ini ke server (misalnya `/root/zet-dns`), lalu masuk ke folder tersebut.
+
+### 2. Jalankan Installer
+
+Sebagai root:
+
+```sh
+./install.sh
+```
+
+1. Akan diminta **password dashboard** (minimal 12 karakter). Kosongkan saja jika ingin dibuatkan password acak.
+2. Tunggu sampai muncul pesan:
 
    ```
    DNS Trust installation completed successfully.
@@ -58,6 +81,7 @@ apt install -y systemd openssh-server nftables unbound-anchor \
    ```
 
 Instalasi selesai. Server DNS langsung aktif dan dashboard bisa dibuka.
+
 
 ## Cara Menggunakan
 
@@ -68,14 +92,23 @@ Buka di browser: `https://<IP-server>:9080/`
 - Login dengan password yang dimasukkan saat instalasi.
 - Peringatan sertifikat di browser bisa dilewati (klik **Advanced → Continue**).
 
-### Menjadikan Server Ini DNS Komputer/HP
+### Screenshot:
 
-Atur DNS di perangkat klien menjadi IP server ini. Contoh di Android:
+1. ![Langkah 1](src/images/1.png)
+2. ![Langkah 2](src/images/2.png)
+3. ![Langkah 3](src/images/3.png)
+4. ![Langkah 4](src/images/4.png)
+5. ![Langkah 5](src/images/5.png)
+6. ![Langkah 6](src/images/6.png)
+7. ![Langkah 7](src/images/7.png)
+8. ![Langkah 8](src/images/8.png)
+9. ![Langkah 9](src/images/9.png)
+10. ![Langkah 10](src/images/10.png)
+11. ![Langkah 11](src/images/11.png)
+12. ![Langkah 12](src/images/12.png)
+13. ![Langkah 13](src/images/13.png)
+14. ![Langkah 14](src/images/14.png)
 
-1. **Pengaturan → Wi‑Fi → (jaringan) → Ubah → IP statis**
-2. Isi **DNS 1** dengan IP server, **DNS 2** kosong.
-
-Semua perangkat di jaringan yang memakai DNS ini otomatis terfilter.
 
 ### Cek Apakah DNS Berjalan
 
