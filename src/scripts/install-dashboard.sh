@@ -6,7 +6,8 @@ test "$(id -u)" -eq 0 || {
     exit 1
 }
 
-BUNDLE_DIR=${1:-/tmp/dnstrust-admin-bundle}
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+BUNDLE_DIR=${1:-"$SCRIPT_DIR"}
 ARTIFACT_ROOT=$BUNDLE_DIR/src
 
 artifact_path() {
