@@ -94,20 +94,20 @@ Buka di browser: `https://<IP-server>:9080/`
 
 ### Screenshot:
 
-1. ![Langkah 1](src/images/1.png)
-2. ![Langkah 2](src/images/2.png)
-3. ![Langkah 3](src/images/3.png)
-4. ![Langkah 4](src/images/4.png)
-5. ![Langkah 5](src/images/5.png)
-6. ![Langkah 6](src/images/6.png)
-7. ![Langkah 7](src/images/7.png)
-8. ![Langkah 8](src/images/8.png)
-9. ![Langkah 9](src/images/9.png)
-10. ![Langkah 10](src/images/10.png)
-11. ![Langkah 11](src/images/11.png)
-12. ![Langkah 12](src/images/12.png)
-13. ![Langkah 13](src/images/13.png)
-14. ![Langkah 14](src/images/14.png)
+![Langkah 1](src/images/1.png)
+![Langkah 2](src/images/2.png)
+![Langkah 3](src/images/3.png)
+![Langkah 4](src/images/4.png)
+![Langkah 5](src/images/5.png)
+![Langkah 6](src/images/6.png)
+![Langkah 7](src/images/7.png)
+![Langkah 8](src/images/8.png)
+![Langkah 9](src/images/9.png)
+![Langkah 10](src/images/10.png)
+![Langkah 11](src/images/11.png)
+![Langkah 12](src/images/12.png)
+![Langkah 13](src/images/13.png)
+![Langkah 14](src/images/14.png)
 
 
 ### Cek Apakah DNS Berjalan
