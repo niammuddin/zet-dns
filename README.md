@@ -127,6 +127,8 @@ systemctl is-active dnstrust-unbound
 | `systemctl status dnstrust-unbound` | Status server DNS |
 | `systemctl status dnstrust-admin` | Status dashboard |
 | `systemctl status unbound-blacklist-update.timer` | Status pembaruan daftar blokir |
+| `sudo /usr/local/sbin/dnstrust-admin reload` | Reload dashboard |
+| `sudo /usr/local/sbin/dnstrust-admin reset-password` | Reset password dashbaord |
 
 Daftar situs blokir diperbarui otomatis setiap 1 jam.
 
