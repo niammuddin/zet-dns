@@ -58,10 +58,32 @@ for command in ldconfig runuser unbound-anchor sshd nft systemctl dig; do
         exit 1
     }
 done
-systemctl list-unit-files qemu-guest-agent.service >/dev/null 2>&1 || {
-    echo "qemu-guest-agent.service is missing; install qemu-guest-agent first" >&2
-    exit 1
+
+is_lxc() {
+    if command -v systemd-detect-virt >/dev/null 2>&1; then
+        test "$(systemd-detect-virt --container 2>/dev/null || true)" = lxc && return 0
+    fi
+    grep -qa 'container=lxc' /proc/1/environ 2>/dev/null && return 0
+    return 1
 }
+
+if is_lxc; then
+    nft list tables >/dev/null 2>&1 || {
+        echo "LXC detected but nftables is not usable; enable NET_ADMIN / privileged container first" >&2
+        exit 1
+    }
+else
+    systemctl list-unit-files qemu-guest-agent.service >/dev/null 2>&1 || {
+        echo "qemu-guest-agent.service is missing; install qemu-guest-agent first" >&2
+        exit 1
+    }
+fi
+
+IN_LXC=no
+is_lxc && IN_LXC=yes || true
+if test "$IN_LXC" = yes; then
+    echo "LXC detected: skipping qemu-guest-agent and getty units"
+fi
 
 id dnstrust >/dev/null 2>&1 || \
     useradd --system --home-dir /var/lib/dnstrust --shell /usr/sbin/nologin dnstrust
@@ -126,8 +148,10 @@ fi
 
 systemctl daemon-reload
 systemctl set-default multi-user.target
-systemctl enable getty@tty1.service serial-getty@ttyS0.service
-systemctl enable --now qemu-guest-agent.service
+if test "$IN_LXC" = no; then
+    systemctl enable getty@tty1.service serial-getty@ttyS0.service
+    systemctl enable --now qemu-guest-agent.service
+fi
 systemctl restart systemd-resolved.service
 systemctl enable --now dnstrust-unbound.service
 systemctl enable --now unbound-blacklist-update.timer

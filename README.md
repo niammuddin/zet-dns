@@ -26,8 +26,9 @@ Fitur utama:
 **OS**
 
 - Debian 12 (bookworm) versi 64-bit (x86_64)
-- Sudah terpasang `qemu-guest-agent` (aplikasi KVM/Proxmox)
 - Server dijalankan sebagai **root**
+- Jika dipasang di **VM/KVM/Proxmox VM**: pasang `qemu-guest-agent`
+- Jika dipasang di **Proxmox LXC**: `nftables` **wajib bisa dipakai** di dalam container (kalau tidak, installer akan gagal)
 
 **Dependensi yang harus sudah terpasang** di server:
 
@@ -37,7 +38,7 @@ Fitur utama:
 | `openssh-server` | Akses SSH |
 | `nftables` | Firewall |
 | `unbound-anchor` | Keamanan DNSSEC |
-| `qemu-guest-agent` | Agen mesin virtual |
+| `qemu-guest-agent` | Agen mesin virtual (hanya untuk VM/KVM) |
 | `dnsutils` | Alat tes DNS (`dig`) |
 | `curl` dan `openssl` | Download & sertifikat |
 | `git` | Untuk clone repository |
@@ -82,6 +83,8 @@ Sebagai root:
    ```
 
 Instalasi selesai. Server DNS langsung aktif dan dashboard bisa dibuka.
+
+> Catatan LXC Proxmox: installer akan otomatis melewati `qemu-guest-agent` dan `getty`, tetapi tetap mewajibkan `nftables` bisa dijalankan di dalam container.
 
 
 ## Cara Menggunakan
