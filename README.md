@@ -84,7 +84,7 @@ Sebagai root:
 
 Instalasi selesai. Server DNS langsung aktif dan dashboard bisa dibuka.
 
-> Catatan LXC Proxmox: installer akan otomatis melewati `qemu-guest-agent` dan `getty`, tetapi tetap mewajibkan `nftables` bisa dijalankan di dalam container.
+> Catatan LXC Proxmox: installer akan otomatis melewati `qemu-guest-agent` dan `getty`, tetap mewajibkan `nftables` bisa dijalankan di dalam container, dan akan melewati restart `systemd-resolved` jika service itu memang tidak ada.
 
 
 ## Cara Menggunakan

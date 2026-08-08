@@ -152,7 +152,11 @@ if test "$IN_LXC" = no; then
     systemctl enable getty@tty1.service serial-getty@ttyS0.service
     systemctl enable --now qemu-guest-agent.service
 fi
-systemctl restart systemd-resolved.service
+if systemctl list-unit-files systemd-resolved.service >/dev/null 2>&1; then
+    systemctl restart systemd-resolved.service
+else
+    echo "systemd-resolved.service not found; skipping restart"
+fi
 systemctl enable --now dnstrust-unbound.service
 systemctl enable --now unbound-blacklist-update.timer
 systemctl enable --now nftables.service
