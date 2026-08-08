@@ -1,8 +1,8 @@
 # Zet-DNS
 
-DNS Server untuk Memfilter/memblokir situs negatif dari daftar **Komdigi Trust Positif**, dilengkapi dashboard admin berbasis web. mesin dns ini meniru perilaku dnstrust-ng komdigi yang depracted tidak dikembangkan lagi.
+DNS Server untuk Memfilter/memblokir situs negatif dari daftar **Komdigi Trust Positif**, menggunakan Unbound sebagai resolver rekursif yang dilengkapi dashboard admin berbasis web, mesin DNS ini meniru perilaku dnstrust-ng komdigi yang deprecated tidak menerima update daftar block lagi.
 
-zetDNS tidak menggunakan RPZ untuk memblokir situs dari daftar domain komdigi yang jumlahnya sudah mencapai sekitar 9juta lebih, tetapi menggunakan cara khusus yang lebih cepat di Unbound resolver dns untuk memblokir daftar domain.
+zetDNS tidak menggunakan RPZ untuk memblokir situs dari daftar domain komdigi yang jumlahnya sudah mencapai sekitar 9 jutaan lebih, tetapi menggunakan cara khusus yang lebih cepat di Unbound resolver dns untuk memblokir daftar domain.
 
 Fitur utama:
 
