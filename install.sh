@@ -6,7 +6,7 @@ test "$(id -u)" -eq 0 || {
     exit 1
 }
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 BUNDLE_DIR=${1:-"$SCRIPT_DIR"}
 ARTIFACT_ROOT=$BUNDLE_DIR/src
 
@@ -24,7 +24,7 @@ artifact_path() {
 for required in \
     install-dns.sh install-dashboard.sh config.json \
     unbound unbound-checkconf unbound-control dnstrust-unbound \
-    dnstrust-control blcreate libcdb.so.1 update-blacklist.sh \
+    dnstrust-control verify-dnstrust-hot-remap blcreate libcdb.so.1 update-blacklist.sh \
     unbound.conf module-config.conf lamanlabuh.conf whitelist.conf \
     local.conf forwarder.conf hosts.conf tproxy.conf safesearch.conf \
     rpz.safesearch dnstrust-unbound.service \
@@ -39,6 +39,16 @@ for required in \
         exit 1
     }
 done
+
+HOT_REMAP_HELPER=$(artifact_path dnstrust-unbound)
+if grep -Eq 'unbound-control.*reload|\$UNBOUND_CONTROL.*reload' "$HOT_REMAP_HELPER"; then
+    echo "dnstrust-unbound refresh tidak boleh reload Unbound" >&2
+    exit 1
+fi
+grep -q 'sleep 1' "$HOT_REMAP_HELPER" || {
+    echo "dnstrust-unbound tidak memuat hot-remap wait" >&2
+    exit 1
+}
 
 command -v openssl >/dev/null 2>&1 || {
     echo "openssl diperlukan untuk HTTPS dan session key" >&2

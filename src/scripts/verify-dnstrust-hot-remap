@@ -1,0 +1,102 @@
+#!/bin/sh
+set -eu
+
+DB=${DB:-/var/lib/dnstrust/blacklist.db}
+LIST=${LIST:-/var/lib/dnstrust/trust.txt}
+CONTROL=${CONTROL:-/usr/local/sbin/dnstrust-control}
+SERVICE=${SERVICE:-dnstrust-unbound.service}
+LOCK=${LOCK:-/etc/unbound/run/update-blacklist.lock}
+
+test "$(id -u)" -eq 0 || {
+    echo "verification must run as root" >&2
+    exit 1
+}
+for command in cp dig flock stat systemctl; do
+    command -v "$command" >/dev/null 2>&1 || {
+        echo "required command missing: $command" >&2
+        exit 1
+    }
+done
+test -s "$DB" || { echo "CDB not found: $DB" >&2; exit 1; }
+test -s "$LIST" || { echo "domain list not found: $LIST" >&2; exit 1; }
+
+exec 9>"$LOCK"
+flock -n 9 || { echo "blacklist updater is running; retry later" >&2; exit 1; }
+
+dbdir=$(dirname "$DB")
+stage=$(mktemp "$dbdir/.hot-remap-test.XXXXXX")
+previous="$dbdir/.hot-remap-test.previous.$$"
+activated=no
+cleanup() {
+    rm -f "$stage"
+    if test "$activated" = yes && test -e "$previous"; then
+        mv -f "$previous" "$DB"
+        "$CONTROL" refresh >/dev/null 2>&1 || true
+    else
+        rm -f "$previous"
+    fi
+}
+trap cleanup EXIT HUP INT TERM
+
+stat_value() {
+    # Consume the complete control response; exiting awk early would make
+    # unbound-control report a harmless but confusing "Broken pipe".
+    "$CONTROL" stats_noreset | awk -F= -v key="$1" '$1 == key {value=$2} END {print value}'
+}
+
+pid_before=$(systemctl show "$SERVICE" -p MainPID --value)
+restarts_before=$(systemctl show "$SERVICE" -p NRestarts --value)
+started_before=$(systemctl show "$SERVICE" -p ExecMainStartTimestampMonotonic --value)
+uptime_before=$(stat_value time.up)
+queries_before=$(stat_value total.num.queries)
+cachehits_before=$(stat_value total.num.cachehits)
+inode_before=$(stat -c %i "$DB")
+
+cp --reflink=auto --preserve=mode,ownership "$DB" "$stage"
+cmp -s "$DB" "$stage" || { echo "staged CDB verification failed" >&2; exit 1; }
+ln "$DB" "$previous"
+mv -f "$stage" "$DB"
+activated=yes
+inode_after=$(stat -c %i "$DB")
+test "$inode_after" != "$inode_before" || {
+    echo "CDB inode did not change" >&2
+    exit 1
+}
+
+"$CONTROL" refresh >/dev/null
+domain=$(head -n 1 "$LIST")
+test -n "$domain" || { echo "test domain is empty" >&2; exit 1; }
+i=0
+while test "$i" -lt 16; do
+    dig +short +time=2 +tries=1 @127.0.0.1 "$domain" A >/dev/null
+    i=$((i + 1))
+done
+
+pid_after=$(systemctl show "$SERVICE" -p MainPID --value)
+restarts_after=$(systemctl show "$SERVICE" -p NRestarts --value)
+started_after=$(systemctl show "$SERVICE" -p ExecMainStartTimestampMonotonic --value)
+uptime_after=$(stat_value time.up)
+queries_after=$(stat_value total.num.queries)
+cachehits_after=$(stat_value total.num.cachehits)
+
+test "$pid_after" = "$pid_before" || { echo "resolver PID changed" >&2; exit 1; }
+test "$restarts_after" = "$restarts_before" || { echo "resolver restart counter changed" >&2; exit 1; }
+test "$started_after" = "$started_before" || { echo "resolver start timestamp changed" >&2; exit 1; }
+awk -v before="$uptime_before" -v after="$uptime_after" 'BEGIN {exit !(after > before)}' || {
+    echo "resolver uptime did not continue" >&2
+    exit 1
+}
+test "$queries_after" -gt "$queries_before" || { echo "query counter reset" >&2; exit 1; }
+test "$cachehits_after" -ge "$cachehits_before" || { echo "cache-hit counter reset" >&2; exit 1; }
+db_fstype=$(findmnt -n -o FSTYPE -T "$DB" 2>/dev/null || true)
+if test "$db_fstype" != overlay; then
+    grep -q " $inode_after .*${DB}$" "/proc/$pid_after/maps" || {
+        echo "new CDB inode was not mapped by a worker" >&2
+        exit 1
+    }
+fi
+
+rm -f "$previous"
+activated=no
+trap - EXIT HUP INT TERM
+echo "PASS hot-remap inode=$inode_before->$inode_after pid=$pid_after queries=$queries_before->$queries_after uptime=$uptime_before->$uptime_after filesystem=${db_fstype:-unknown}"

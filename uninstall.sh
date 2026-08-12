@@ -48,7 +48,8 @@ done
 rm -f \
     /usr/local/sbin/unbound /usr/local/sbin/unbound-checkconf \
     /usr/local/sbin/unbound-control /usr/local/sbin/update-dnstrust-blacklist \
-    /usr/local/sbin/dnstrust-control /usr/local/sbin/dnstrust-admin \
+    /usr/local/sbin/dnstrust-control /usr/local/sbin/verify-dnstrust-hot-remap \
+    /usr/local/sbin/dnstrust-admin \
     /usr/local/libexec/dnstrust-unbound /usr/local/bin/blcreate \
     /usr/local/lib/libcdb.so.1 /etc/default/unbound-blacklist-update \
     /etc/nftables.conf /etc/tproxy.conf \

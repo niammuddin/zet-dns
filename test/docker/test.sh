@@ -14,7 +14,7 @@ set -eu
 #   ADMIN_PASSWORD   dashboard password   (default: DockerTest123)
 #   KEEP=1           keep container+image after the run
 
-PROJECT_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+PROJECT_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/../.." && pwd)
 IMAGE=${IMAGE:-dnstrust-test}
 CONTAINER=${CONTAINER:-dnstrust-test}
 ADMIN_PASSWORD=${ADMIN_PASSWORD:-DockerTest123}
@@ -72,6 +72,10 @@ IP=$(hostname -I | awk "{print \$1}")
 dig @"$IP" example.com A +short +time=5 +tries=1 | grep -q . || { echo "dns resolution failed" >&2; exit 1; }
 code=$(curl -sk -o /dev/null -w "%{http_code}" "https://$IP:9080/login")
 test "$code" = 200 || { echo "dashboard unreachable (http $code)" >&2; exit 1; }
+/usr/local/sbin/verify-dnstrust-hot-remap | grep -q "^PASS hot-remap " || {
+    echo "CDB hot-remap verification failed" >&2
+    exit 1
+}
 echo "ALL CHECKS PASSED"
 '
 

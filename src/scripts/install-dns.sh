@@ -6,7 +6,7 @@ test "$(id -u)" -eq 0 || {
     exit 1
 }
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 BUNDLE_DIR=${1:-"$SCRIPT_DIR"}
 ARTIFACT_ROOT=$BUNDLE_DIR/src
 
@@ -26,6 +26,7 @@ for required in \
     unbound-checkconf \
     unbound-control \
     dnstrust-unbound \
+    verify-dnstrust-hot-remap \
     dnstrust-control \
     blcreate \
     libcdb.so.1 \
@@ -97,6 +98,7 @@ install -o root -g root -m 0755 "$(artifact_path unbound)" /usr/local/sbin/unbou
 install -o root -g root -m 0755 "$(artifact_path unbound-checkconf)" /usr/local/sbin/unbound-checkconf
 install -o root -g root -m 0755 "$(artifact_path unbound-control)" /usr/local/sbin/unbound-control
 install -o root -g root -m 0755 "$(artifact_path dnstrust-unbound)" /usr/local/libexec/dnstrust-unbound
+install -o root -g root -m 0755 "$(artifact_path verify-dnstrust-hot-remap)" /usr/local/sbin/verify-dnstrust-hot-remap
 install -o root -g root -m 0755 "$(artifact_path blcreate)" /usr/local/bin/blcreate
 install -o root -g root -m 0755 "$(artifact_path update-blacklist.sh)" /usr/local/sbin/update-dnstrust-blacklist
 install -o root -g root -m 0755 "$(artifact_path dnstrust-control)" /usr/local/sbin/dnstrust-control

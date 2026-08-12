@@ -20,6 +20,8 @@ Fitur utama:
 - ACL / Access control list pelanggan
 - DNS inspector
 - Activity log
+- Pembaruan CDB dengan hot-remap tanpa reload resolver, sehingga cache, uptime,
+  dan statistik kumulatif tetap terjaga
 
 ## Syarat (Sebelum Instalasi)
 
@@ -132,8 +134,15 @@ systemctl is-active dnstrust-unbound
 | `systemctl status unbound-blacklist-update.timer` | Status pembaruan daftar blokir |
 | `sudo /usr/local/sbin/dnstrust-admin reload` | Reload dashboard |
 | `sudo /usr/local/sbin/dnstrust-admin reset-password` | Reset password dashbaord |
+| `sudo /usr/local/sbin/verify-dnstrust-hot-remap` | Verifikasi pergantian CDB tanpa reload resolver |
 
 Daftar situs blokir diperbarui otomatis setiap 1 jam.
+
+Ketika sumber Komdigi berubah, updater membangun CDB baru dan menggantinya
+secara atomik. Worker Unbound mendeteksi inode baru dan melakukan hot-remap;
+proses Unbound tidak di-reload dan statistik tidak direset. Perintah verifikasi
+di atas aman dijalankan setelah instalasi atau upgrade karena menggunakan
+salinan CDB dengan isi identik, bukan mengubah daftar blokir.
 
 ### Panduan Singkat nftables
 

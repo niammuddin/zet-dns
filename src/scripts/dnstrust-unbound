@@ -6,7 +6,12 @@ CONFIG=/etc/unbound/unbound.conf
 
 case "${1:-}" in
     refresh)
-        exec "$UNBOUND_CONTROL" -c "$CONFIG" reload
+        # blacklist.db is replaced with an atomic rename. The patched Unbound
+        # workers detect the new inode before their next query (throttled to
+        # once per second), so reloading here would only discard cache and
+        # reset cumulative statistics.
+        sleep 1
+        echo ok
         ;;
     stats_noreset|stats|status)
         exec "$UNBOUND_CONTROL" -c "$CONFIG" "$1"

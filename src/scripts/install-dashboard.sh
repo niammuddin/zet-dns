@@ -6,7 +6,7 @@ test "$(id -u)" -eq 0 || {
     exit 1
 }
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 BUNDLE_DIR=${1:-"$SCRIPT_DIR"}
 ARTIFACT_ROOT=$BUNDLE_DIR/src
 

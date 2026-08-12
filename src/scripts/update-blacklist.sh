@@ -431,8 +431,8 @@ build_started=$(date +%s)
 )
 build_finished=$(date +%s)
 [ -s "$CDB_NEW" ] || fail "blcreate did not produce blacklist.db"
-# Unbound workers run as an unprivileged user on the appliance and reopen this
-# file during `dnstrust-unbound refresh`.
+# Unbound workers run as an unprivileged user and hot-remap this file after the
+# atomic activation below. Keep it readable without reloading the daemon.
 chmod 0644 "$CDB_NEW"
 
 if [ "$FAULT_POINT" = "after-build" ]; then
