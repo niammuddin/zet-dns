@@ -4,7 +4,7 @@ DNS Server untuk Memfilter/memblokir situs negatif dari daftar **Komdigi Trust P
 
 zetDNS tidak menggunakan RPZ untuk memblokir situs dari daftar domain komdigi yang jumlahnya sudah mencapai sekitar 9 jutaan lebih, tetapi menggunakan cara khusus yang lebih cepat di Unbound resolver dns untuk memblokir daftar domain.
 
-Fitur utama:
+**Fitur utama:**
 
 - Memfilter situs dari daftar Trust Positif (otomatis diperbarui)
 - Set interval update daftar domain trust+ komdigi
