@@ -136,7 +136,7 @@ systemctl is-active dnstrust-unbound
 | `sudo /usr/local/sbin/dnstrust-admin reset-password` | Reset password dashbaord |
 | `sudo /usr/local/sbin/verify-dnstrust-hot-remap` | Verifikasi pergantian CDB tanpa reload resolver |
 
-Daftar situs blokir diperbarui otomatis setiap 1 jam.
+Daftar situs blokir diperbarui otomatis sesuai pengaturan interval.
 
 Ketika sumber Komdigi berubah, updater membangun CDB baru dan menggantinya
 secara atomik. Worker Unbound mendeteksi inode baru dan melakukan hot-remap;
